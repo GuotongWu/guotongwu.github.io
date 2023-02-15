@@ -1,0 +1,675 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Sycamore">
+    <title>Linux Instruction - Sycamore</title>
+    <meta name="author" content="Bolulu">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Bolulu","sameAs":["https://github.com/GuotongWu","guotong.wu@foxmail.com"]},"articleBody":"This post is just for personal convenience while using ubuntu server. Some configurations and tools below are very useful but easy to forget. So I write this post to record those   command lines.\n\n\n\n\nHow to build an ubuntu server quicklyWhen I create a new account, this order will help me to handle the blank ubuntu server very fast.\ndocker12345678910111213docker ps -adocker imagesdocker stop &lt;docker container name&gt;docker rm -f &lt;container id&gt;docker run --name wgt-pytorch --runtime=nvidia -itd -v /home/wuguotong/wgt-pytorch:/wgt-pytorch -p 3320:22 -p 3321:3321 --shm-size 8G pytorch/pytorch:1.9.0-cuda11.1-cudnn8-develdocker start wgt-pytorchdocker exec -it wgt-pytorch /bin/bash\n\nsome basic toolsBefore use apt-get install, you should:\n1apt-get update\n\nFor sudo and vim\n1apt-get install sudo vim curl git htop\n\nopensshChange root password\n1passwd\n\nInstall openssh\n12345sudo apt-get install openssh-serversudo /etc/init.d/ssh start # start ssh serverps -e | grep ssh\n\nThen modify ssh configuration, use vim /etc/ssh/sshd_config, change PermitRootLogin no to PermitRootLogin yes, restart ssh:\n1sudo /etc/init.d/ssh restart\n\nOn your remote computer, the ssh configuration should be like this:\n12345Host sustech-root  HostName 10.20.47.117  User root  ProxyCommand nc -X 5 -x 127.0.0.1:1080 %h %p  # socket5 proxy  Port 3320\n\nThen you can use vscode to connect remote\nzshFirst change the apt source, reference on aliyun mirror help\n12345678910111213141516# code /etc/apt/sources.list# on ubuntu 20.04deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiversedeb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiversedeb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiversedeb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiversedeb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiversedeb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiversedeb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiversedeb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiversedeb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiversedeb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse\n\nInstall zsh\n12sudo apt-get install zshchsh -s /bin/zsh # change as default\n\nInstall oh-my-zsh\n1sh -c &quot;$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)&quot;\n\ncondaBefore use, make conda useful for your shell env:\n1conda init zsh\n\n1234# copy base envconda create -n &lt;new name&gt; --clone &lt;base name&gt;# activate your current envconda activate &lt;new name&gt;\n\nChange conda package source, reference on tsinghua mirror help\n1234567891011121314151617# touch /$USER/.condarcchannels:  - defaultsshow_channel_urls: truedefault_channels:  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2custom_channels:  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud  msys2: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud  bioconda: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud  menpo: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud  pytorch-lts: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud  simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n\npip1$ pip config set global.index-url https://mirrors.sustech.edu.cn/pypi/simple\n\ngitInitialize the configuration when first using git\n12git config --global user.name &quot;XXX&quot;git config --global user.email &quot;XXX@email.com&quot;\n\ngithubAdd ssh key to github, ref github page\nCheck the directory listing to see if you already have a public SSH key.\n1$ ls -al ~/.ssh\n\nGenerating a new SSH key\n1$ ssh-keygen -t ed25519 -C &quot;your_email@example.com&quot;\n\nCopy the public key, and add it to github website\n1$ cat ~/.ssh/id_ed25519.pub\n\nTest ssh connection\n12$ ssh -T git@github.com# Attempts to ssh to GitHub\n\ncheatsheet for ubuntuThis part records some important tools and command lines.\nnginxnginx简单配置文件\n12345678910111213141516171819202122232425262728293031323334# /etc/nginx/conf.d/default.confserver &#123;    listen  80;    server_name your_domain_name; ##，绑定域名    rewrite ^(.*)$ https://$host$1; # 将所有HTTP请求通过rewrite指令重定向到HTTPS    index /root/guotongwu.github.io/index.html; # 默认文件    location / &#123;         proxy_pass http://127.0.0.1:4000;  ## 指定端口号 4000    &#125;    error_page 404 /root/guotongwu.github.io/404.html;&#125;#以下属性中，以ssl开头的属性表示与证书配置有关。server &#123;    listen 443 ssl;    #配置HTTPS的默认访问端口为443。    #如果未在此处配置HTTPS的默认访问端口，可能会造成Nginx无法启动。    #如果您使用Nginx 1.15.0及以上版本，请使用listen 443 ssl代替listen 443和ssl on。    server_name your_domain_name; #需要将yourdomain替换成证书绑定的域名。    root html;    index /root/guotongwu.github.io/index.html; #默认文件    ssl_certificate pem_path;  #需要将cert-file-name.pem替换成已上传的证书文件的名称。    ssl_certificate_key key_path; #需要将cert-file-name.key替换成已上传的证书私钥文件的名称。    ssl_session_timeout 5m;    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;    #表示使用的加密套件的类型。    ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3; #表示使用的TLS协议的类型。    ssl_prefer_server_ciphers on;    location / &#123;        root html;  #Web网站程序存放目录。        index /root/guotongwu.github.io/index.html; #默认文件        proxy_pass http://127.0.0.1:4000;  ## 指定端口号 4000    &#125;&#125;\n\nnginx重启服务\n1nginx -s reload\n\ntmux参考：阮一峰网络日志\n基本操作\n1234567891011# 新建会话tmux new -s &lt;session name&gt;# 分离会话tmux detach # Ctrl+b, d# 查看会话tmux attach -t &lt;session name&gt;# 结束会话tmux kill-session -t &lt;session name&gt;# 重命名tmux rename-session -t &lt;session number&gt; &lt;new name&gt;Ctrl+b, $ # 重命名当前会话\n\n快捷键\n1234567891011121314Ctrl+b %：划分左右两个窗格。Ctrl+b &quot;：划分上下两个窗格。Ctrl+b &lt;arrow key&gt;：光标切换到其他窗格。&lt;arrow key&gt;是指向要切换到的窗格的方向键，比如切换到下方窗格，就按方向键↓。Ctrl+b ;：光标切换到上一个窗格。Ctrl+b o：光标切换到下一个窗格。Ctrl+b &#123;：当前窗格与上一个窗格交换位置。Ctrl+b &#125;：当前窗格与下一个窗格交换位置。Ctrl+b Ctrl+o：所有窗格向前移动一个位置，第一个窗格变成最后一个窗格。Ctrl+b Alt+o：所有窗格向后移动一个位置，最后一个窗格变成第一个窗格。Ctrl+b x：关闭当前窗格。Ctrl+b !：将当前窗格拆分为一个独立窗口。Ctrl+b z：当前窗格全屏显示，再使用一次会变回原来大小。Ctrl+b Ctrl+&lt;arrow key&gt;：按箭头方向调整窗格大小。Ctrl+b q：显示窗格编号。\n\n窗口操作\n1234567891011# 新建窗口tmux new-window -n &lt;window name&gt;Ctrl+b c# 切换窗口tmux select-window -t &lt;window name&gt;Ctrl+b p # 上一个Ctrl+b n # 下一个Ctrl+b w # 列表选择# 重命名tmux rename-window &lt;new-name&gt;Ctrl+b , # 窗口重命名\n\ntmux设置\n12# 打开鼠标set-option -g mouse on\n\nubuntu desktop默认使用TCP协议，需要放行5901端口，参考腾讯云文档\n123apt-get updateapt install gnome-panel gnome-settings-daemon metacity nautilus gnome-terminal ubuntu-desktopapt-get install tightvncserver # ubuntu 20.04\n\n启动服务，设置密码\n1vncserver\n\n更改配置文件：~&#x2F;.vnc&#x2F;xstartup\n12345#!/bin/shexport XKL_XMODMAP_DISABLE=1export XDG_CURRENT_DESKTOP=&quot;GNOME-Flashback:GNOME&quot;export XDG_MENU_PREFIX=&quot;gnome-flashback-&quot;gnome-session --session=gnome-flashback-metacity --disable-acceleration-check &amp;\n\n重启\n12vncserver -kill :1 #杀掉原桌面进程，输入命令（其中的:1是桌面号）vncserver -geometry 1280x720 :1 #生成新的会话\n","dateCreated":"2023-02-14T18:21:46+08:00","dateModified":"2023-02-14T22:02:46+08:00","datePublished":"2023-02-14T18:21:46+08:00","description":"This post is just for personal convenience while using ubuntu server. Some configurations and tools below are very useful but easy to forget. So I write this post to record those   command lines.","headline":"Linux Instruction","image":["ubuntu.jpg","MistyForest_1920x1080.jpg"],"mainEntityOfPage":{"@type":"WebPage","@id":"https://omysycamore.top/2023/02/14/Linux-Instruction/"},"publisher":{"@type":"Organization","name":"Bolulu","sameAs":["https://github.com/GuotongWu","guotong.wu@foxmail.com"]},"url":"https://omysycamore.top/2023/02/14/Linux-Instruction/","keywords":"code technique","thumbnailUrl":"ubuntu.jpg"}</script>
+    <meta name="description" content="This post is just for personal convenience while using ubuntu server. Some configurations and tools below are very useful but easy to forget. So I write this post to record those   command lines.">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Linux Instruction">
+<meta property="og:url" content="https://omysycamore.top/2023/02/14/Linux-Instruction/index.html">
+<meta property="og:site_name" content="Sycamore">
+<meta property="og:description" content="This post is just for personal convenience while using ubuntu server. Some configurations and tools below are very useful but easy to forget. So I write this post to record those   command lines.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-14T10:21:46.000Z">
+<meta property="article:modified_time" content="2023-02-14T14:02:46.059Z">
+<meta property="article:author" content="Bolulu">
+<meta property="article:tag" content="code technique">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+    
+        <meta property="og:image" content="https://omysycamore.top/2023/02/14/Linux-Instruction/ubuntu.jpg"/>
+        <meta class="swiftype" name="image" data-type="enum" content="https://omysycamore.top/2023/02/14/Linux-Instruction/ubuntu.jpg"/>
+    
+    
+        <meta property="og:image" content="https://omysycamore.top/2023/02/14/Linux-Instruction/MistyForest_1920x1080.jpg"/>
+        <meta class="swiftype" name="image" data-type="enum" content="https://omysycamore.top/2023/02/14/Linux-Instruction/MistyForest_1920x1080.jpg"/>
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style-funupwxfi6pyd1e39qoto7pzzfyjkzzq7l3b6mpg6b1s6colshbl1tp2vkvd.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            Sycamore
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/GuotongWu"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/guotong.wu@foxmail.com"
+                            
+                            rel="noopener"
+                            title="邮箱"
+                        >
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+        <div class="post-header-cover
+                    text-center
+                    post-header-cover--partial"
+             style="background-image:url('/2023/02/14/Linux-Instruction/MistyForest_1920x1080.jpg');"
+             data-behavior="4">
+            
+                <div class="post-header main-content-wrap text-center">
+    
+        <h1 class="post-title">
+            Linux Instruction
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2023-02-14T18:21:46+08:00">
+	
+		    2月 14, 2023
+    	
+    </time>
+    
+</div>
+
+    
+</div>
+
+            
+        </div>
+
+            <div id="main" data-behavior="4"
+                 class="hasCover
+                        hasCoverMetaIn
+                        hasCoverCaption">
+                
+<article class="post">
+    
+        <span class="post-header-cover-caption caption">Misty Forest</span>
+    
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p>This post is just for personal convenience while using ubuntu server. Some configurations and tools below are very useful but easy to forget. So I write this post to record those   command lines.</p>
+<span id="more"></span>
+
+<h1 id="table-of-contents">目录</h1><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#How-to-build-an-ubuntu-server-quickly"><span class="toc-text">How to build an ubuntu server quickly</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#docker"><span class="toc-text">docker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#some-basic-tools"><span class="toc-text">some basic tools</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#openssh"><span class="toc-text">openssh</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#zsh"><span class="toc-text">zsh</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#conda"><span class="toc-text">conda</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pip"><span class="toc-text">pip</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git"><span class="toc-text">git</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#github"><span class="toc-text">github</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#cheatsheet-for-ubuntu"><span class="toc-text">cheatsheet for ubuntu</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#nginx"><span class="toc-text">nginx</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tmux"><span class="toc-text">tmux</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ubuntu-desktop"><span class="toc-text">ubuntu desktop</span></a></li></ol></li></ol>
+
+<h1 id="How-to-build-an-ubuntu-server-quickly"><a href="#How-to-build-an-ubuntu-server-quickly" class="headerlink" title="How to build an ubuntu server quickly"></a>How to build an ubuntu server quickly</h1><p>When I create a new account, this order will help me to handle the blank ubuntu server very fast.</p>
+<h2 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">docker ps -a</span><br><span class="line"></span><br><span class="line">docker images</span><br><span class="line"></span><br><span class="line">docker stop &lt;docker container name&gt;</span><br><span class="line"></span><br><span class="line">docker <span class="built_in">rm</span> -f &lt;container <span class="built_in">id</span>&gt;</span><br><span class="line"></span><br><span class="line">docker run --name wgt-pytorch --runtime=nvidia -itd -v /home/wuguotong/wgt-pytorch:/wgt-pytorch -p 3320:22 -p 3321:3321 --shm-size 8G pytorch/pytorch:1.9.0-cuda11.1-cudnn8-devel</span><br><span class="line"></span><br><span class="line">docker start wgt-pytorch</span><br><span class="line"></span><br><span class="line">docker <span class="built_in">exec</span> -it wgt-pytorch /bin/bash</span><br></pre></td></tr></table></figure>
+
+<h2 id="some-basic-tools"><a href="#some-basic-tools" class="headerlink" title="some basic tools"></a>some basic tools</h2><p>Before use apt-get install, you should:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br></pre></td></tr></table></figure>
+
+<p>For sudo and vim</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install sudo vim curl git htop</span><br></pre></td></tr></table></figure>
+
+<h2 id="openssh"><a href="#openssh" class="headerlink" title="openssh"></a>openssh</h2><p>Change root password</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd</span><br></pre></td></tr></table></figure>
+
+<p>Install openssh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br><span class="line"></span><br><span class="line">sudo /etc/init.d/ssh start <span class="comment"># start ssh server</span></span><br><span class="line"></span><br><span class="line">ps -e | grep ssh</span><br></pre></td></tr></table></figure>
+
+<p>Then modify ssh configuration, use <code>vim /etc/ssh/sshd_config</code>, change <code>PermitRootLogin no</code> to <code>PermitRootLogin yes</code>, restart ssh:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/ssh restart</span><br></pre></td></tr></table></figure>
+
+<p>On your remote computer, the ssh configuration should be like this:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Host sustech-root</span><br><span class="line">  HostName 10.20.47.117</span><br><span class="line">  User root</span><br><span class="line">  ProxyCommand nc -X 5 -x 127.0.0.1:1080 %h %p  <span class="comment"># socket5 proxy</span></span><br><span class="line">  Port 3320</span><br></pre></td></tr></table></figure>
+
+<p>Then you can use vscode to connect remote</p>
+<h2 id="zsh"><a href="#zsh" class="headerlink" title="zsh"></a>zsh</h2><p>First change the apt source, reference on <a target="_blank" rel="noopener" href="https://developer.aliyun.com/mirror/ubuntu?spm=a2c6h.13651102.0.0.3e221b11phlFT5">aliyun mirror help</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># code /etc/apt/sources.list</span></span><br><span class="line"><span class="comment"># on ubuntu 20.04</span></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse</span><br><span class="line"></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse</span><br></pre></td></tr></table></figure>
+
+<p>Install zsh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install zsh</span><br><span class="line">chsh -s /bin/zsh <span class="comment"># change as default</span></span><br></pre></td></tr></table></figure>
+
+<p>Install oh-my-zsh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh -c <span class="string">&quot;<span class="subst">$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="conda"><a href="#conda" class="headerlink" title="conda"></a>conda</h2><p>Before use, make conda useful for your shell env:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda init zsh</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># copy base env</span></span><br><span class="line">conda create -n &lt;new name&gt; --<span class="built_in">clone</span> &lt;base name&gt;</span><br><span class="line"><span class="comment"># activate your current env</span></span><br><span class="line">conda activate &lt;new name&gt;</span><br></pre></td></tr></table></figure>
+
+<p>Change conda package source, reference on <a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/">tsinghua mirror help</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># touch /$USER/.condarc</span></span><br><span class="line"></span><br><span class="line">channels:</span><br><span class="line">  - defaults</span><br><span class="line">show_channel_urls: <span class="literal">true</span></span><br><span class="line">default_channels:</span><br><span class="line">  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main</span><br><span class="line">  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r</span><br><span class="line">  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2</span><br><span class="line">custom_channels:</span><br><span class="line">  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span><br><span class="line">  msys2: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span><br><span class="line">  bioconda: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span><br><span class="line">  menpo: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span><br><span class="line">  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span><br><span class="line">  pytorch-lts: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span><br><span class="line">  simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud</span><br></pre></td></tr></table></figure>
+
+<h2 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pip config <span class="built_in">set</span> global.index-url https://mirrors.sustech.edu.cn/pypi/simple</span><br></pre></td></tr></table></figure>
+
+<h2 id="git"><a href="#git" class="headerlink" title="git"></a>git</h2><p>Initialize the configuration when first using git</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;XXX&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;XXX@email.com&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="github"><a href="#github" class="headerlink" title="github"></a>github</h2><p>Add ssh key to github, ref <a target="_blank" rel="noopener" href="https://docs.github.com/cn/authentication/connecting-to-github-with-ssh">github page</a></p>
+<p>Check the directory listing to see if you already have a public SSH key.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">ls</span> -al ~/.ssh</span><br></pre></td></tr></table></figure>
+
+<p>Generating a new SSH key</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t ed25519 -C <span class="string">&quot;your_email@example.com&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>Copy the public key, and add it to github website</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cat</span> ~/.ssh/id_ed25519.pub</span><br></pre></td></tr></table></figure>
+
+<p>Test ssh connection</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -T git@github.com</span><br><span class="line"><span class="comment"># Attempts to ssh to GitHub</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="cheatsheet-for-ubuntu"><a href="#cheatsheet-for-ubuntu" class="headerlink" title="cheatsheet for ubuntu"></a>cheatsheet for ubuntu</h1><p>This part records some important tools and command lines.</p>
+<h2 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h2><p>nginx简单配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># /etc/nginx/conf.d/default.conf</span></span><br><span class="line">server &#123;</span><br><span class="line">    listen  80;</span><br><span class="line">    server_name your_domain_name; <span class="comment">##，绑定域名</span></span><br><span class="line">    rewrite ^(.*)$ https://$host<span class="variable">$1</span>; <span class="comment"># 将所有HTTP请求通过rewrite指令重定向到HTTPS</span></span><br><span class="line">    index /root/guotongwu.github.io/index.html; <span class="comment"># 默认文件</span></span><br><span class="line">    location / &#123;</span><br><span class="line">         proxy_pass http://127.0.0.1:4000;  <span class="comment">## 指定端口号 4000</span></span><br><span class="line">    &#125;</span><br><span class="line">    error_page 404 /root/guotongwu.github.io/404.html;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#以下属性中，以ssl开头的属性表示与证书配置有关。</span></span><br><span class="line">server &#123;</span><br><span class="line">    listen 443 ssl;</span><br><span class="line">    <span class="comment">#配置HTTPS的默认访问端口为443。</span></span><br><span class="line">    <span class="comment">#如果未在此处配置HTTPS的默认访问端口，可能会造成Nginx无法启动。</span></span><br><span class="line">    <span class="comment">#如果您使用Nginx 1.15.0及以上版本，请使用listen 443 ssl代替listen 443和ssl on。</span></span><br><span class="line">    server_name your_domain_name; <span class="comment">#需要将yourdomain替换成证书绑定的域名。</span></span><br><span class="line">    root html;</span><br><span class="line">    index /root/guotongwu.github.io/index.html; <span class="comment">#默认文件</span></span><br><span class="line">    ssl_certificate pem_path;  <span class="comment">#需要将cert-file-name.pem替换成已上传的证书文件的名称。</span></span><br><span class="line">    ssl_certificate_key key_path; <span class="comment">#需要将cert-file-name.key替换成已上传的证书私钥文件的名称。</span></span><br><span class="line">    ssl_session_timeout 5m;</span><br><span class="line">    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;</span><br><span class="line">    <span class="comment">#表示使用的加密套件的类型。</span></span><br><span class="line">    ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3; <span class="comment">#表示使用的TLS协议的类型。</span></span><br><span class="line">    ssl_prefer_server_ciphers on;</span><br><span class="line">    location / &#123;</span><br><span class="line">        root html;  <span class="comment">#Web网站程序存放目录。</span></span><br><span class="line">        index /root/guotongwu.github.io/index.html; <span class="comment">#默认文件</span></span><br><span class="line">        proxy_pass http://127.0.0.1:4000;  <span class="comment">## 指定端口号 4000</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>nginx重启服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<h2 id="tmux"><a href="#tmux" class="headerlink" title="tmux"></a>tmux</h2><p><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2019/10/tmux.html">参考：阮一峰网络日志</a></p>
+<p>基本操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 新建会话</span></span><br><span class="line">tmux new -s &lt;session name&gt;</span><br><span class="line"><span class="comment"># 分离会话</span></span><br><span class="line">tmux detach <span class="comment"># Ctrl+b, d</span></span><br><span class="line"><span class="comment"># 查看会话</span></span><br><span class="line">tmux attach -t &lt;session name&gt;</span><br><span class="line"><span class="comment"># 结束会话</span></span><br><span class="line">tmux kill-session -t &lt;session name&gt;</span><br><span class="line"><span class="comment"># 重命名</span></span><br><span class="line">tmux rename-session -t &lt;session number&gt; &lt;new name&gt;</span><br><span class="line">Ctrl+b, $ <span class="comment"># 重命名当前会话</span></span><br></pre></td></tr></table></figure>
+
+<p>快捷键</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+b %：划分左右两个窗格。</span><br><span class="line">Ctrl+b &quot;：划分上下两个窗格。</span><br><span class="line">Ctrl+b <span class="language-xml"><span class="tag">&lt;<span class="name">arrow</span> <span class="attr">key</span>&gt;</span></span>：光标切换到其他窗格。<span class="language-xml"><span class="tag">&lt;<span class="name">arrow</span> <span class="attr">key</span>&gt;</span></span>是指向要切换到的窗格的方向键，比如切换到下方窗格，就按方向键↓。</span><br><span class="line">Ctrl+b ;：光标切换到上一个窗格。</span><br><span class="line">Ctrl+b o：光标切换到下一个窗格。</span><br><span class="line">Ctrl+b &#123;：当前窗格与上一个窗格交换位置。</span><br><span class="line">Ctrl+b &#125;：当前窗格与下一个窗格交换位置。</span><br><span class="line">Ctrl+b Ctrl+o：所有窗格向前移动一个位置，第一个窗格变成最后一个窗格。</span><br><span class="line">Ctrl+b Alt+o：所有窗格向后移动一个位置，最后一个窗格变成第一个窗格。</span><br><span class="line">Ctrl+b x：关闭当前窗格。</span><br><span class="line">Ctrl+b !：将当前窗格拆分为一个独立窗口。</span><br><span class="line">Ctrl+b z：当前窗格全屏显示，再使用一次会变回原来大小。</span><br><span class="line">Ctrl+b Ctrl+<span class="language-xml"><span class="tag">&lt;<span class="name">arrow</span> <span class="attr">key</span>&gt;</span></span>：按箭头方向调整窗格大小。</span><br><span class="line">Ctrl+b q：显示窗格编号。</span><br></pre></td></tr></table></figure>
+
+<p>窗口操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 新建窗口</span></span><br><span class="line">tmux new-window -n &lt;window name&gt;</span><br><span class="line">Ctrl+b c</span><br><span class="line"><span class="comment"># 切换窗口</span></span><br><span class="line">tmux select-window -t &lt;window name&gt;</span><br><span class="line">Ctrl+b p <span class="comment"># 上一个</span></span><br><span class="line">Ctrl+b n <span class="comment"># 下一个</span></span><br><span class="line">Ctrl+b w <span class="comment"># 列表选择</span></span><br><span class="line"><span class="comment"># 重命名</span></span><br><span class="line">tmux rename-window &lt;new-name&gt;</span><br><span class="line">Ctrl+b , <span class="comment"># 窗口重命名</span></span><br></pre></td></tr></table></figure>
+
+<p>tmux设置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 打开鼠标</span></span><br><span class="line">set-option -g mouse on</span><br></pre></td></tr></table></figure>
+
+<h2 id="ubuntu-desktop"><a href="#ubuntu-desktop" class="headerlink" title="ubuntu desktop"></a>ubuntu desktop</h2><p>默认使用TCP协议，需要放行5901端口，参考<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/213/46001">腾讯云文档</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt install gnome-panel gnome-settings-daemon metacity nautilus gnome-terminal ubuntu-desktop</span><br><span class="line">apt-get install tightvncserver <span class="comment"># ubuntu 20.04</span></span><br></pre></td></tr></table></figure>
+
+<p>启动服务，设置密码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncserver</span><br></pre></td></tr></table></figure>
+
+<p>更改配置文件：~&#x2F;.vnc&#x2F;xstartup</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="built_in">export</span> XKL_XMODMAP_DISABLE=1</span><br><span class="line"><span class="built_in">export</span> XDG_CURRENT_DESKTOP=<span class="string">&quot;GNOME-Flashback:GNOME&quot;</span></span><br><span class="line"><span class="built_in">export</span> XDG_MENU_PREFIX=<span class="string">&quot;gnome-flashback-&quot;</span></span><br><span class="line">gnome-session --session=gnome-flashback-metacity --disable-acceleration-check &amp;</span><br></pre></td></tr></table></figure>
+
+<p>重启</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vncserver -<span class="built_in">kill</span> :1 <span class="comment">#杀掉原桌面进程，输入命令（其中的:1是桌面号）</span></span><br><span class="line">vncserver -geometry 1280x720 :1 <span class="comment">#生成新的会话</span></span><br></pre></td></tr></table></figure>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/code-technique/" rel="tag">code technique</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2022/12/31/moment-3/"
+                    data-tooltip="印象深刻的瞬间（三）"
+                    aria-label="下一篇: 印象深刻的瞬间（三）"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2023/02/14/Linux-Instruction/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2023/02/14/Linux-Instruction/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://omysycamore.top/2023/02/14/Linux-Instruction/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2023 Bolulu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2022/12/31/moment-3/"
+                    data-tooltip="印象深刻的瞬间（三）"
+                    aria-label="下一篇: 印象深刻的瞬间（三）"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2023/02/14/Linux-Instruction/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2023/02/14/Linux-Instruction/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://omysycamore.top/2023/02/14/Linux-Instruction/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="目录">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2023/02/14/Linux-Instruction/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2023/02/14/Linux-Instruction/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://omysycamore.top/2023/02/14/Linux-Instruction/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <h4 id="about-card-name">Bolulu</h4>
+        
+            <div id="about-card-bio"><p>人烟寒橘柚，秋色老梧桐</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>Coding and Writing</p>
+
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/script-hjc55ji0xrzzzibczl3cbxt3s4f51rhd554gpwqyxmxmpyzz8ia7daqc7lzi.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>
