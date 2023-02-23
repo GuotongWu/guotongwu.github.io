@@ -1,0 +1,600 @@
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Sycamore">
+    <title>Evolutionary Programming Made Faster - Sycamore</title>
+    <meta name="author" content="Bolulu">
+    
+    
+    
+        
+            <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+        
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Bolulu","sameAs":["https://github.com/GuotongWu","guotong.wu@foxmail.com"]},"articleBody":"Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.\n\n\nIntroductionThe disadvantage of classical EP (CEP) is the low convergence on multimodal problems. The new EP proposed in this paper uses the Cauchy mutation which outperforms the Gaussian mutation. \nClassical Evolutionary ProgrammingThe self-adaptive mutation is usually better.\nBasic Steps\n\n\n12345function pop = Initialization(popsize,lb,ub,n)    x = lb+(ub-lb)*rand([popsize,n]);    eta = 3*ones([popsize,n]); % 初始值为3    pop = [x, eta];end\n\n\n\n1234567function fitness = Evaluation(pop, objective, n)    popsize = size(pop,1);    fitness = zeros(1,popsize);    for k = 1:popsize        fitness(k) = objective(pop(k,1:n));    endend\n\n\n\n123456789function child = CreateNew(parent, n, lb, ub)    tau1 = 1/(sqrt(2*sqrt(n)));    tau2 = 1/sqrt(2*n);    x = parent(1:n) + parent(n+1:end).*randn(1,n);    x = boundData(x, lb, ub);    normrand = randn;    eta = parent(n+1:end).*exp(tau2*normrand+tau1*randn(1,n));    child = [x,eta];end\n\n\n\n12345678910function newpop = Selection(pop, q, mu, fitness)    popsize = size(pop,1);    wins = zeros(1, popsize);    for k = 1:popsize        opponents = randperm(popsize,q);        wins(k) = sum(fitness(k)&lt;=fitness(opponents)); % 最小化问题    end    [~, index] = sort(wins, &#x27;descend&#x27;);    newpop = pop(index(1:mu),:);end\n\n\n\nFast Evolutionary Programming[To be continued]\n","dateCreated":"2023-02-23T18:38:42+08:00","dateModified":"2023-02-23T18:55:53+08:00","datePublished":"2023-02-23T18:38:42+08:00","description":"Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.","headline":"Evolutionary Programming Made Faster","image":["essays.svg"],"mainEntityOfPage":{"@type":"WebPage","@id":"https://omysycamore.top/2023/02/23/FEP/"},"publisher":{"@type":"Organization","name":"Bolulu","sameAs":["https://github.com/GuotongWu","guotong.wu@foxmail.com"]},"url":"https://omysycamore.top/2023/02/23/FEP/","keywords":"paper","thumbnailUrl":"essays.svg"}</script>
+    <meta name="description" content="Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Evolutionary Programming Made Faster">
+<meta property="og:url" content="https://omysycamore.top/2023/02/23/FEP/index.html">
+<meta property="og:site_name" content="Sycamore">
+<meta property="og:description" content="Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/1.png">
+<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/2.png">
+<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/3.png">
+<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/4.png">
+<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/5.png">
+<meta property="article:published_time" content="2023-02-23T10:38:42.000Z">
+<meta property="article:modified_time" content="2023-02-23T10:55:53.547Z">
+<meta property="article:author" content="Bolulu">
+<meta property="article:tag" content="paper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://omysycamore.top/2023/02/23/FEP/1.png">
+    
+    
+        
+    
+    
+    
+        <meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/essays.svg"/>
+        <meta class="swiftype" name="image" data-type="enum" content="https://omysycamore.top/2023/02/23/FEP/essays.svg"/>
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/style-funupwxfi6pyd1e39qoto7pzzfyjkzzq7l3b6mpg6b1s6colshbl1tp2vkvd.min.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            Sycamore
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="打开链接: /#about"
+            >
+        
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="首页"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">首页</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="标签"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">标签</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="归档"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">归档</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="搜索"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">搜索</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="关于"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">关于</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/GuotongWu"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/guotong.wu@foxmail.com"
+                            
+                            rel="noopener"
+                            title="邮箱"
+                        >
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">邮箱</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            Evolutionary Programming Made Faster
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2023-02-23T18:38:42+08:00">
+	
+		    2月 23, 2023
+    	
+    </time>
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <p><em>Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.</em></p>
+<span id="more"></span>
+
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>The disadvantage of classical EP (CEP) is the low convergence on multimodal problems. The new EP proposed in this paper uses the <strong>Cauchy mutation</strong> which outperforms the <strong>Gaussian mutation</strong>. </p>
+<h2 id="Classical-Evolutionary-Programming"><a href="#Classical-Evolutionary-Programming" class="headerlink" title="Classical Evolutionary Programming"></a>Classical Evolutionary Programming</h2><p>The self-adaptive mutation is usually better.</p>
+<p><strong>Basic Steps</strong></p>
+<div class="figure center" style="width:;"><a class="fancybox" href="1.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="1.png" alt=""></a></div><div style="clear:both;"></div>
+
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">pop</span> = <span class="title">Initialization</span><span class="params">(popsize,lb,ub,n)</span></span></span><br><span class="line">    x = lb+(ub-lb)*<span class="built_in">rand</span>([popsize,n]);</span><br><span class="line">    eta = <span class="number">3</span>*<span class="built_in">ones</span>([popsize,n]); <span class="comment">% 初始值为3</span></span><br><span class="line">    pop = [x, eta];</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<div class="figure center" style="width:;"><a class="fancybox" href="2.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="2.png" alt=""></a></div><div style="clear:both;"></div>
+
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fitness</span> = <span class="title">Evaluation</span><span class="params">(pop, objective, n)</span></span></span><br><span class="line">    popsize = <span class="built_in">size</span>(pop,<span class="number">1</span>);</span><br><span class="line">    fitness = <span class="built_in">zeros</span>(<span class="number">1</span>,popsize);</span><br><span class="line">    <span class="keyword">for</span> k = <span class="number">1</span>:popsize</span><br><span class="line">        fitness(k) = objective(pop(k,<span class="number">1</span>:n));</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<div class="figure center" style="width:;"><a class="fancybox" href="3.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="3.png" alt=""></a></div><div style="clear:both;"></div>
+
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">child</span> = <span class="title">CreateNew</span><span class="params">(parent, n, lb, ub)</span></span></span><br><span class="line">    tau1 = <span class="number">1</span>/(<span class="built_in">sqrt</span>(<span class="number">2</span>*<span class="built_in">sqrt</span>(n)));</span><br><span class="line">    tau2 = <span class="number">1</span>/<span class="built_in">sqrt</span>(<span class="number">2</span>*n);</span><br><span class="line">    x = parent(<span class="number">1</span>:n) + parent(n+<span class="number">1</span>:<span class="keyword">end</span>).*<span class="built_in">randn</span>(<span class="number">1</span>,n);</span><br><span class="line">    x = boundData(x, lb, ub);</span><br><span class="line">    normrand = <span class="built_in">randn</span>;</span><br><span class="line">    eta = parent(n+<span class="number">1</span>:<span class="keyword">end</span>).*<span class="built_in">exp</span>(tau2*normrand+tau1*<span class="built_in">randn</span>(<span class="number">1</span>,n));</span><br><span class="line">    child = [x,eta];</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<div class="figure center" style="width:;"><a class="fancybox" href="4.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="4.png" alt=""></a></div><div style="clear:both;"></div>
+
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">newpop</span> = <span class="title">Selection</span><span class="params">(pop, q, mu, fitness)</span></span></span><br><span class="line">    popsize = <span class="built_in">size</span>(pop,<span class="number">1</span>);</span><br><span class="line">    wins = <span class="built_in">zeros</span>(<span class="number">1</span>, popsize);</span><br><span class="line">    <span class="keyword">for</span> k = <span class="number">1</span>:popsize</span><br><span class="line">        opponents = randperm(popsize,q);</span><br><span class="line">        wins(k) = sum(fitness(k)&lt;=fitness(opponents)); <span class="comment">% 最小化问题</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    [~, index] = <span class="built_in">sort</span>(wins, <span class="string">&#x27;descend&#x27;</span>);</span><br><span class="line">    newpop = pop(index(<span class="number">1</span>:mu),:);</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<div class="figure center" style="width:;"><a class="fancybox" href="5.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="5.png" alt=""></a></div><div style="clear:both;"></div>
+
+<h2 id="Fast-Evolutionary-Programming"><a href="#Fast-Evolutionary-Programming" class="headerlink" title="Fast Evolutionary Programming"></a>Fast Evolutionary Programming</h2><p>[To be continued]</p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">标签</span><br/>
+                
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/paper/" rel="tag">paper</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2023/02/14/Linux-Instruction/"
+                    data-tooltip="Linux Instruction"
+                    aria-label="下一篇: Linux Instruction"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2023/02/23/FEP/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2023/02/23/FEP/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://omysycamore.top/2023/02/23/FEP/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2023 Bolulu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a
+                        class="post-action-btn btn btn--disabled"
+                        aria-hidden="true"
+                    >
+                        
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2023/02/14/Linux-Instruction/"
+                    data-tooltip="Linux Instruction"
+                    aria-label="下一篇: Linux Instruction"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Diesen Beitrag teilen"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2023/02/23/FEP/"
+                    title="分享到 Facebook"
+                    aria-label="分享到 Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2023/02/23/FEP/"
+                    title="分享到 Twitter"
+                    aria-label="分享到 Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://omysycamore.top/2023/02/23/FEP/"
+                    title="分享到 Google+"
+                    aria-label="分享到 Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Nach oben">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2023/02/23/FEP/"
+                        aria-label="分享到 Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2023/02/23/FEP/"
+                        aria-label="分享到 Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://omysycamore.top/2023/02/23/FEP/"
+                        aria-label="分享到 Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <h4 id="about-card-name">Bolulu</h4>
+        
+            <div id="about-card-bio"><p>人烟寒橘柚，秋色老梧桐</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>Coding and Writing</p>
+
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/script-hjc55ji0xrzzzibczl3cbxt3s4f51rhd554gpwqyxmxmpyzz8ia7daqc7lzi.min.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>
