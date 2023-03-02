@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Sycamore">
-    <title>Evolutionary Programming Made Faster - Sycamore</title>
+    <title>高中日记（三） - Sycamore</title>
     <meta name="author" content="Bolulu">
     
     
@@ -15,33 +15,27 @@
             <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
         
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Bolulu","sameAs":["https://github.com/GuotongWu","guotong.wu@foxmail.com"]},"articleBody":"Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.\n\n\nIntroductionThe disadvantage of classical EP (CEP) is the low convergence on multimodal problems. The new EP proposed in this paper uses the Cauchy mutation which outperforms the Gaussian mutation. \nClassical Evolutionary ProgrammingThe self-adaptive mutation is usually better.\nBasic Steps\n\n\n12345function pop = Initialization(popsize,lb,ub,n)    x = lb+(ub-lb)*rand([popsize,n]);    eta = 3*ones([popsize,n]); % 初始值为3    pop = [x, eta];end\n\n\n\n1234567function fitness = Evaluation(pop, objective, n)    popsize = size(pop,1);    fitness = zeros(1,popsize);    for k = 1:popsize        fitness(k) = objective(pop(k,1:n));    endend\n\n\n\n123456789function child = CreateNew(parent, n, lb, ub)    tau1 = 1/(sqrt(2*sqrt(n)));    tau2 = 1/sqrt(2*n);    x = parent(1:n) + parent(n+1:end).*randn(1,n);    x = boundData(x, lb, ub);    normrand = randn;    eta = parent(n+1:end).*exp(tau2*normrand+tau1*randn(1,n));    child = [x,eta];end\n\n\n\n12345678910function newpop = Selection(pop, q, mu, fitness)    popsize = size(pop,1);    wins = zeros(1, popsize);    for k = 1:popsize        opponents = randperm(popsize,q);        wins(k) = sum(fitness(k)&lt;=fitness(opponents)); % 最小化问题    end    [~, index] = sort(wins, &#x27;descend&#x27;);    newpop = pop(index(1:mu),:);end\n\n\n\nFast Evolutionary Programming[To be continued]\n","dateCreated":"2023-02-23T18:38:42+08:00","dateModified":"2023-02-23T18:55:53+08:00","datePublished":"2023-02-23T18:38:42+08:00","description":"Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.","headline":"Evolutionary Programming Made Faster","image":["essays.svg"],"mainEntityOfPage":{"@type":"WebPage","@id":"https://omysycamore.top/2023/02/23/FEP/"},"publisher":{"@type":"Organization","name":"Bolulu","sameAs":["https://github.com/GuotongWu","guotong.wu@foxmail.com"]},"url":"https://omysycamore.top/2023/02/23/FEP/","keywords":"paper","thumbnailUrl":"essays.svg"}</script>
-    <meta name="description" content="Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Bolulu","sameAs":["https://github.com/GuotongWu","guotong.wu@foxmail.com"]},"articleBody":"寒风总是催人生泪的。\n\n\n今天气温陡然下降了五度，突然地，小兽般地闯进来，然后就是阴云遍天，让我数着叶脉幻想春天的日子戛然而止。\n一诊的试卷分析尚未结束。各科的作业便已蜂拥而至。那握笔的手竟是那样的无力。压力，来自各个地方，我无法喘息。忧伤，仿佛是这个季节独有的记忆。\n我无数次把自己幻想成一个开拓者，行走在戈壁滩上，时常能感受到孤独，干渴和疲倦，但前方总是有意义的，我不愿把这叫做战斗，这只是一次旅行，一次长达三年的旅行。我们信心勃勃地写下自己的誓言，我们从不在乎他人的评价，我们走过前人的路，寻找前人未曾寻找到的东西。\n我也能感受到快乐。当每晚放学回家时，你看到银杏在风中缓缓地飘落，你注意到这个城市未尝预见到的美，一种在自己高一时曾经厌弃的美。这三年是非同寻常的体验，因为总有一群志同道合者，陪伴你左右，这回忆连同这城市，是无可取代的。于是你开始渴望，时间能够变慢一些，但总是无法实现。想到还有半年，自己就要离开这座城市，心里一酸，有了些“却望并州是故乡”的感觉。\n我无比珍惜这段时光。\n","dateCreated":"2018-01-01T14:17:21+08:00","dateModified":"2023-03-02T17:47:29+08:00","datePublished":"2018-01-01T14:17:21+08:00","description":"寒风总是催人生泪的。","headline":"高中日记（三）","image":["diary.svg"],"mainEntityOfPage":{"@type":"WebPage","@id":"https://omysycamore.top/2018/01/01/highschooldiary-3/"},"publisher":{"@type":"Organization","name":"Bolulu","sameAs":["https://github.com/GuotongWu","guotong.wu@foxmail.com"]},"url":"https://omysycamore.top/2018/01/01/highschooldiary-3/","keywords":"diary","thumbnailUrl":"diary.svg"}</script>
+    <meta name="description" content="寒风总是催人生泪的。">
 <meta property="og:type" content="blog">
-<meta property="og:title" content="Evolutionary Programming Made Faster">
-<meta property="og:url" content="https://omysycamore.top/2023/02/23/FEP/index.html">
+<meta property="og:title" content="高中日记（三）">
+<meta property="og:url" content="https://omysycamore.top/2018/01/01/highschooldiary-3/index.html">
 <meta property="og:site_name" content="Sycamore">
-<meta property="og:description" content="Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.">
+<meta property="og:description" content="寒风总是催人生泪的。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/1.png">
-<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/2.png">
-<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/3.png">
-<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/4.png">
-<meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/5.png">
-<meta property="article:published_time" content="2023-02-23T10:38:42.000Z">
-<meta property="article:modified_time" content="2023-02-23T10:55:53.547Z">
+<meta property="article:published_time" content="2018-01-01T06:17:21.000Z">
+<meta property="article:modified_time" content="2023-03-02T09:47:29.947Z">
 <meta property="article:author" content="Bolulu">
-<meta property="article:tag" content="paper">
+<meta property="article:tag" content="diary">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://omysycamore.top/2023/02/23/FEP/1.png">
     
     
         
     
     
     
-        <meta property="og:image" content="https://omysycamore.top/2023/02/23/FEP/essays.svg"/>
-        <meta class="swiftype" name="image" data-type="enum" content="https://omysycamore.top/2023/02/23/FEP/essays.svg"/>
+        <meta property="og:image" content="https://omysycamore.top/2018/01/01/highschooldiary-3/diary.svg"/>
+        <meta class="swiftype" name="image" data-type="enum" content="https://omysycamore.top/2018/01/01/highschooldiary-3/diary.svg"/>
     
     
     
@@ -238,14 +232,14 @@
         <div class="post-header main-content-wrap text-left">
     
         <h1 class="post-title">
-            Evolutionary Programming Made Faster
+            高中日记（三）
         </h1>
     
     
         <div class="post-meta">
-    <time datetime="2023-02-23T18:38:42+08:00">
+    <time datetime="2018-01-01T14:17:21+08:00">
 	
-		    2月 23, 2023
+		    1月 01, 2018
     	
     </time>
     
@@ -257,31 +251,14 @@
     
     <div class="post-content markdown">
         <div class="main-content-wrap">
-            <p><em>Xin Yao, Yong Liu and Guangming Lin, “Evolutionary programming made faster,” in IEEE Transactions on Evolutionary Computation, vol. 3, no. 2, pp. 82-102, July 1999, doi: 10.1109&#x2F;4235.771163.</em></p>
+            <p>寒风总是催人生泪的。</p>
 <span id="more"></span>
 
-<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>The disadvantage of classical EP (CEP) is the low convergence on multimodal problems. The new EP proposed in this paper uses the <strong>Cauchy mutation</strong> which outperforms the <strong>Gaussian mutation</strong>. </p>
-<h2 id="Classical-Evolutionary-Programming"><a href="#Classical-Evolutionary-Programming" class="headerlink" title="Classical Evolutionary Programming"></a>Classical Evolutionary Programming</h2><p>The self-adaptive mutation is usually better.</p>
-<p><strong>Basic Steps</strong></p>
-<div class="figure center" style="width:;"><a class="fancybox" href="1.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="1.png" alt=""></a></div><div style="clear:both;"></div>
-
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">pop</span> = <span class="title">Initialization</span><span class="params">(popsize,lb,ub,n)</span></span></span><br><span class="line">    x = lb+(ub-lb)*<span class="built_in">rand</span>([popsize,n]);</span><br><span class="line">    eta = <span class="number">3</span>*<span class="built_in">ones</span>([popsize,n]); <span class="comment">% 初始值为3</span></span><br><span class="line">    pop = [x, eta];</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-
-<div class="figure center" style="width:;"><a class="fancybox" href="2.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="2.png" alt=""></a></div><div style="clear:both;"></div>
-
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fitness</span> = <span class="title">Evaluation</span><span class="params">(pop, objective, n)</span></span></span><br><span class="line">    popsize = <span class="built_in">size</span>(pop,<span class="number">1</span>);</span><br><span class="line">    fitness = <span class="built_in">zeros</span>(<span class="number">1</span>,popsize);</span><br><span class="line">    <span class="keyword">for</span> k = <span class="number">1</span>:popsize</span><br><span class="line">        fitness(k) = objective(pop(k,<span class="number">1</span>:n));</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-
-<div class="figure center" style="width:;"><a class="fancybox" href="3.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="3.png" alt=""></a></div><div style="clear:both;"></div>
-
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">child</span> = <span class="title">CreateNew</span><span class="params">(parent, n, lb, ub)</span></span></span><br><span class="line">    tau1 = <span class="number">1</span>/(<span class="built_in">sqrt</span>(<span class="number">2</span>*<span class="built_in">sqrt</span>(n)));</span><br><span class="line">    tau2 = <span class="number">1</span>/<span class="built_in">sqrt</span>(<span class="number">2</span>*n);</span><br><span class="line">    x = parent(<span class="number">1</span>:n) + parent(n+<span class="number">1</span>:<span class="keyword">end</span>).*<span class="built_in">randn</span>(<span class="number">1</span>,n);</span><br><span class="line">    x = boundData(x, lb, ub);</span><br><span class="line">    normrand = <span class="built_in">randn</span>;</span><br><span class="line">    eta = parent(n+<span class="number">1</span>:<span class="keyword">end</span>).*<span class="built_in">exp</span>(tau2*normrand+tau1*<span class="built_in">randn</span>(<span class="number">1</span>,n));</span><br><span class="line">    child = [x,eta];</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-
-<div class="figure center" style="width:;"><a class="fancybox" href="4.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="4.png" alt=""></a></div><div style="clear:both;"></div>
-
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">newpop</span> = <span class="title">Selection</span><span class="params">(pop, q, mu, fitness)</span></span></span><br><span class="line">    popsize = <span class="built_in">size</span>(pop,<span class="number">1</span>);</span><br><span class="line">    wins = <span class="built_in">zeros</span>(<span class="number">1</span>, popsize);</span><br><span class="line">    <span class="keyword">for</span> k = <span class="number">1</span>:popsize</span><br><span class="line">        opponents = randperm(popsize,q);</span><br><span class="line">        wins(k) = sum(fitness(k)&lt;=fitness(opponents)); <span class="comment">% 最小化问题</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    [~, index] = <span class="built_in">sort</span>(wins, <span class="string">&#x27;descend&#x27;</span>);</span><br><span class="line">    newpop = pop(index(<span class="number">1</span>:mu),:);</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-
-<div class="figure center" style="width:;"><a class="fancybox" href="5.png" title="" data-caption="" data-fancybox="default"><img class="fig-img" src="5.png" alt=""></a></div><div style="clear:both;"></div>
-
-<h2 id="Fast-Evolutionary-Programming"><a href="#Fast-Evolutionary-Programming" class="headerlink" title="Fast Evolutionary Programming"></a>Fast Evolutionary Programming</h2><p>[To be continued]</p>
+<p>今天气温陡然下降了五度，突然地，小兽般地闯进来，然后就是阴云遍天，让我数着叶脉幻想春天的日子戛然而止。</p>
+<p>一诊的试卷分析尚未结束。各科的作业便已蜂拥而至。那握笔的手竟是那样的无力。压力，来自各个地方，我无法喘息。忧伤，仿佛是这个季节独有的记忆。</p>
+<p>我无数次把自己幻想成一个开拓者，行走在戈壁滩上，时常能感受到孤独，干渴和疲倦，但前方总是有意义的，我不愿把这叫做战斗，这只是一次旅行，一次长达三年的旅行。我们信心勃勃地写下自己的誓言，我们从不在乎他人的评价，我们走过前人的路，寻找前人未曾寻找到的东西。</p>
+<p>我也能感受到快乐。当每晚放学回家时，你看到银杏在风中缓缓地飘落，你注意到这个城市未尝预见到的美，一种在自己高一时曾经厌弃的美。这三年是非同寻常的体验，因为总有一群志同道合者，陪伴你左右，这回忆连同这城市，是无可取代的。于是你开始渴望，时间能够变慢一些，但总是无法实现。想到还有半年，自己就要离开这座城市，心里一酸，有了些“却望并州是故乡”的感觉。</p>
+<p>我无比珍惜这段时光。</p>
 
             
 
@@ -293,7 +270,7 @@
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">标签</span><br/>
                 
-    <a class="tag tag--primary tag--small t-none-link" href="/tags/paper/" rel="tag">paper</a>
+    <a class="tag tag--primary tag--small t-none-link" href="/tags/diary/" rel="tag">diary</a>
 
             </div>
         
@@ -306,9 +283,9 @@
                     
                 <a
                     class="post-action-btn btn btn--default tooltip--top"
-                    href="/2023/03/02/bookmark1/"
-                    data-tooltip="Kindle读书摘抄"
-                    aria-label="上一篇: Kindle读书摘抄"
+                    href="/2019/01/22/%E6%95%85%E4%B9%A1%E5%B1%B1%E6%B0%B4/"
+                    data-tooltip="故乡山水"
+                    aria-label="上一篇: 故乡山水"
                 >
                     
                         <i class="fa fa-angle-left" aria-hidden="true"></i>
@@ -320,9 +297,9 @@
                     
                 <a
                     class="post-action-btn btn btn--default tooltip--top"
-                    href="/2023/02/14/Linux-Instruction/"
-                    data-tooltip="Linux Instruction"
-                    aria-label="下一篇: Linux Instruction"
+                    href="/2017/04/01/highschooldiary-2/"
+                    data-tooltip="高中日记（二）"
+                    aria-label="下一篇: 高中日记（二）"
                 >
                     
                         <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
@@ -347,7 +324,7 @@
             <li class="post-action hide-xs">
                 <a
                     class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2023/02/23/FEP/"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2018/01/01/highschooldiary-3/"
                     title="分享到 Facebook"
                     aria-label="分享到 Facebook"
                 >
@@ -360,7 +337,7 @@
             <li class="post-action hide-xs">
                 <a
                     class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2023/02/23/FEP/"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2018/01/01/highschooldiary-3/"
                     title="分享到 Twitter"
                     aria-label="分享到 Twitter"
                 >
@@ -373,7 +350,7 @@
             <li class="post-action hide-xs">
                 <a
                     class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://omysycamore.top/2023/02/23/FEP/"
+                    target="new" href="https://plus.google.com/share?url=https://omysycamore.top/2018/01/01/highschooldiary-3/"
                     title="分享到 Google+"
                     aria-label="分享到 Google+"
                 >
@@ -421,9 +398,9 @@
                     
                 <a
                     class="post-action-btn btn btn--default tooltip--top"
-                    href="/2023/03/02/bookmark1/"
-                    data-tooltip="Kindle读书摘抄"
-                    aria-label="上一篇: Kindle读书摘抄"
+                    href="/2019/01/22/%E6%95%85%E4%B9%A1%E5%B1%B1%E6%B0%B4/"
+                    data-tooltip="故乡山水"
+                    aria-label="上一篇: 故乡山水"
                 >
                     
                         <i class="fa fa-angle-left" aria-hidden="true"></i>
@@ -435,9 +412,9 @@
                     
                 <a
                     class="post-action-btn btn btn--default tooltip--top"
-                    href="/2023/02/14/Linux-Instruction/"
-                    data-tooltip="Linux Instruction"
-                    aria-label="下一篇: Linux Instruction"
+                    href="/2017/04/01/highschooldiary-2/"
+                    data-tooltip="高中日记（二）"
+                    aria-label="下一篇: 高中日记（二）"
                 >
                     
                         <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
@@ -462,7 +439,7 @@
             <li class="post-action hide-xs">
                 <a
                     class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2023/02/23/FEP/"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2018/01/01/highschooldiary-3/"
                     title="分享到 Facebook"
                     aria-label="分享到 Facebook"
                 >
@@ -475,7 +452,7 @@
             <li class="post-action hide-xs">
                 <a
                     class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2023/02/23/FEP/"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2018/01/01/highschooldiary-3/"
                     title="分享到 Twitter"
                     aria-label="分享到 Twitter"
                 >
@@ -488,7 +465,7 @@
             <li class="post-action hide-xs">
                 <a
                     class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://omysycamore.top/2023/02/23/FEP/"
+                    target="new" href="https://plus.google.com/share?url=https://omysycamore.top/2018/01/01/highschooldiary-3/"
                     title="分享到 Google+"
                     aria-label="分享到 Google+"
                 >
@@ -522,7 +499,7 @@
                     <a
                         class="share-option-btn"
                         target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2023/02/23/FEP/"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://omysycamore.top/2018/01/01/highschooldiary-3/"
                         aria-label="分享到 Facebook"
                     >
                         <i class="fab fa-facebook" aria-hidden="true"></i><span>分享到 Facebook</span>
@@ -535,7 +512,7 @@
                     <a
                         class="share-option-btn"
                         target="new"
-                        href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2023/02/23/FEP/"
+                        href="https://twitter.com/intent/tweet?text=https://omysycamore.top/2018/01/01/highschooldiary-3/"
                         aria-label="分享到 Twitter"
                     >
                         <i class="fab fa-twitter" aria-hidden="true"></i><span>分享到 Twitter</span>
@@ -548,7 +525,7 @@
                     <a
                         class="share-option-btn"
                         target="new"
-                        href="https://plus.google.com/share?url=https://omysycamore.top/2023/02/23/FEP/"
+                        href="https://plus.google.com/share?url=https://omysycamore.top/2018/01/01/highschooldiary-3/"
                         aria-label="分享到 Google+"
                     >
                         <i class="fab fa-google-plus" aria-hidden="true"></i><span>分享到 Google+</span>
